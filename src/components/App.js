@@ -1,42 +1,41 @@
-import React, { Component, useState } from "react";
-import '../styles/App.css';
+import React, { useState, useEffect } from "react";
+import "../styles/App.css";
 
-class App extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            renderBall: false,
-            posi : 0,
-            ballPosition: { left: "0px" }
-        };
-        this.renderChoice = this.renderBallOrButton.bind(this)
-        this.buttonClickHandler = this.buttonClickHandler.bind(this)
+const App = () => {
+  const [showBall, setShowBall] = useState(false);
+  const [ballPosition, setBallPosition] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "ArrowRight" || event.keyCode === 39) {
+        setBallPosition((prevPosition) => ({
+          ...prevPosition,
+          left: prevPosition.left + 5,
+        }));
+      }
     };
 
-    buttonClickHandler() {
-   
-   }
-    renderBallOrButton() {
-		if (this.state.renderBall) {
-		    return <div className="ball" style={this.state.ballPosition}></div>
-		} else {
-		    return <button onClick={this.buttonClickHandler} >Start</button>
-		}
-    }
+    window.addEventListener("keydown", handleKeyDown);
 
-    // bind ArrowRight keydown event
-    componentDidMount() {
-      
-    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []); // Empty dependency array to ensure the effect runs only once
 
-    render() {
-        return (
-            <div className="playground">
-                {this.renderBallOrButton()}
-            </div>
-        )
-    }
-}
+  const startGame = () => {
+    setShowBall(true);
+  };
 
+  return (
+    <div>
+      {!showBall && (
+        <button className="start" onClick={startGame}>
+          Start
+        </button>
+      )}
+      {showBall && <div className="ball" style={ballPosition}></div>}
+    </div>
+  );
+};
 
 export default App;
